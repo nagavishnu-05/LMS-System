@@ -1,0 +1,19 @@
+-- Admin Table
+
+CREATE TABLE admin (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_id VARCHAR(100) NOT NULL UNIQUE,
+    pass VARCHAR(255) NOT NULL,
+    admin_code VARCHAR(50) NOT NULL UNIQUE
+) ENGINE=InnoDB;
+
+-- Courses Table
+
+CREATE TABLE courses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    course_id VARCHAR(50) NOT NULL UNIQUE,
+    course_name VARCHAR(255) NOT NULL,
+    admin_code VARCHAR(50) NOT NULL,
+    yt_link VARCHAR(255),
+    FOREIGN KEY (admin_code) REFERENCES admin(admin_code)
+) ENGINE=InnoDB;
