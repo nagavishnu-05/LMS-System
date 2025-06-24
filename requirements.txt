@@ -1,4 +1,9 @@
 streamlit==1.46.0
 mysql-connector-python
+fpdf
+requests
+pandas
+mysql-connector-python
 tabulate
+fpdf
 pandas

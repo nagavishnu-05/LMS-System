@@ -29,6 +29,19 @@ sidebar_option = st.sidebar.selectbox(
     ("Add New Course", "Show Courses")
 )
 
+# Logout button in sidebar
+if st.sidebar.button("Logout"):
+    for key in ["logged_in", "user_role", "admin_id", "admin_code"]:
+        if key in st.session_state:
+            del st.session_state[key]
+    st.success("You have been logged out.")
+    st.rerun()
+
+# Redirect to login if not logged in
+if not st.session_state.get("logged_in", False):
+    st.info("Please log in to continue.")
+    st.switch_page("Dashboard.py")
+
 # Database connection
 conn = get_connection()
 cursor = conn.cursor()

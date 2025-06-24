@@ -115,3 +115,21 @@ with col2:
             student_id = st.text_input("Register No.")
             student_password = st.text_input("Password", type="password")
             student_button = st.form_submit_button("Login as Student")
+        if student_button:
+            from db import get_connection
+            connect = get_connection()
+            cursor = connect.cursor()
+            query = "SELECT * FROM students WHERE student_id = %s AND password = %s"
+            cursor.execute(query, (student_id, student_password))
+            result = cursor.fetchone()
+            if result:
+                st.session_state.logged_in = True
+                st.session_state.user_role = "student"
+                st.session_state.student_id = student_id
+                st.success("Login Successful!")
+                try:
+                    st.switch_page("E:\VS Projects\Intern\LMS-System\pages\StudentDashboard.py")
+                except AttributeError:
+                    st.info("Redirecting to Student Dashboard... (If not redirected, please select StudentDashboard from the sidebar)")
+            else:
+                st.error("Invalid Credentials")
