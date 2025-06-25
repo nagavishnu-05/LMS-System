@@ -7,7 +7,6 @@ import pandas as pd
 import tempfile
 import os
 
-# Hide only the default Streamlit navigation sidebar, not your custom sidebar
 hide_nav_style = """
     <style>
         [data-testid="stSidebarNav"] {display: none !important;}
@@ -137,12 +136,10 @@ def generate_certificate(student_id, course_id):
         pdf.cell(0, 10, "_____________________________", ln=1, align='R')
         pdf.cell(0, 7, "Staff Signature", ln=1, align='R')
         
-        # Save to a temporary file
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
             pdf.output(tmp.name)
             pdf_bytes = tmp.read()
             tmp.close()
-            # Remove the temporary file
             os.remove(tmp.name)
         
         b64 = base64.b64encode(pdf_bytes).decode()
@@ -152,7 +149,6 @@ def generate_certificate(student_id, course_id):
         cursor.close()
         conn.close()
 
-# 1. All Courses (with Enroll option)
 if sidebar_option == "All Courses":
     st.header("All Courses")
     cursor.execute("SELECT course_id, course_name, yt_link FROM courses")
@@ -175,8 +171,6 @@ if sidebar_option == "All Courses":
                 st.success(f"Enrolled in {cname}!")
                 st.rerun()
         st.markdown("---")
-
-# 2. My Courses (show enrolled, allow mark complete)
 elif sidebar_option == "My Courses":
     st.header("My Courses")
     cursor.execute("""
@@ -208,7 +202,6 @@ elif sidebar_option == "My Courses":
                     st.success(f"Course {cid} marked as completed!")
                     st.rerun()
             st.markdown("---")
-        # Show DataFrame of enrolled courses as a table
         import pandas as pd
         course_data = []
         for cid, cname, yt_link, completed in enrolled_courses:
@@ -221,8 +214,6 @@ elif sidebar_option == "My Courses":
         st.write(df.to_html(escape=False, index=False), unsafe_allow_html=True)
     else:
         st.info("You are not enrolled in any courses.")
-
-# 3. Completed Courses (show certificates)
 elif sidebar_option == "Completed Courses":
     st.header("Completed Courses")
     cursor.execute("""
@@ -246,28 +237,14 @@ elif sidebar_option == "Completed Courses":
     else:
         st.info("No completed courses yet.")
 
-    import pandas as pd
-    course_data = []
-    for cid, cname, yt_link in enrolled_courses:
-        # Create clickable YouTube link
-        yt_url = f"https://www.youtube.com/watch?v={yt_link}" if yt_link else ""
-        course_data.append([cid, cname, yt_url])
-    df = pd.DataFrame(course_data, columns=["Course ID", "Course Name", "YouTube Video"])
-    # Make YouTube links clickable in table
-    def make_clickable(val):
-        return f'<a href="{val}" target="_blank">{val}</a>' if val else ''
-    df["YouTube Video"] = df["YouTube Video"].apply(make_clickable)
-    st.write(df.to_html(escape=False, index=False), unsafe_allow_html=True)
 else:
     st.info("You are not enrolled in any courses.")
 
-# Logout button (sidebar only)
 def logout():
     for key in ["logged_in", "user_role", "student_id", "student_name"]:
         if key in st.session_state:
             del st.session_state[key]
     st.success("You have been logged out.")
-    # Redirect to Dashboard page after logout
     try:
         st.switch_page("Dashboard.py")
     except Exception:
